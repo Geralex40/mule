@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a4b5eb74-84c3-4b1c-9308-546f3e3d0b83" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config_Oracle" doc:name="Database Config" doc:id="8b0f26ba-fbec-47fd-920f-c9a0cc858c1d" >
+		<db:oracle-connection host="0.0.0.0" user="german" password="1234" instance="XE" />
+	</db:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="5fc29862-0249-48a0-84a3-8ecb99b6c8e0" >
+		<db:oracle-connection host="localhost" user="german" password="1234" instance="xe" />
+	</db:config>
+	<flow name="pruebaFlow1" doc:id="b2001068-6395-41fe-901c-c5d204198fae" >
+		<http:listener doc:name="Listener" doc:id="d2f21d2e-82d8-4e85-9713-6ad73f1aa02e" config-ref="HTTP_Listener_config" path="/flights"/>
+		<db:select doc:name="Select" doc:id="31b48b25-bcda-42f1-a494-fd85bcbd0038" config-ref="Database_Config_Oracle">
+			<db:sql ><![CDATA[SELECT * FROM american]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="da387d31-ecf2-43ba-9d0c-44c4f36e4fd9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	id: payload01.ID default "",
+	nombre: payload01.NOMBRE default "",
+	rol: payload01.ROL default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5f5977d2-2d84-4fca-aff7-2048d03f7a8d" message="#[payload]" />
+	</flow>
+	<flow name="pruebaFlow" doc:id="e6106c96-b053-444a-8fcc-a106f60e0355" >
+		<http:listener doc:name="Listener" doc:id="aafd39f6-878e-4460-9df5-e48fe83856c9" config-ref="HTTP_Listener_config" path="/record" />
+		<db:insert doc:name="Insert" doc:id="b1ee0c51-c9f0-4aab-b458-d300a649aa77" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into american values(:id_ip,:nombre_ip,:rol_ip)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[output application/json
+var jsonPayload = read(payload,"application/json")
+---
+{
+	id_ip: jsonPayload.id as String,
+	nombre_ip: jsonPayload.nombre as String,
+	rol_ip: jsonPayload.rol as String
+}]]]></db:input-parameters>
+		</db:insert>
+	</flow>
+</mule>

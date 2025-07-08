@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="american_flights_json" format="json">
+      <types:shape format="weave" example="examples/example-1.json"><![CDATA[%dw 2.0
+
+type american_flights_json = Array<{|  id: String,   nombre: String,   rol: String|}> {"example": "[{\\\"id\\\":\\\"2\\\",\\\"nombre\\\":\\\"abc\\\",\\\"rol\\\":\\\"dfg\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#da387d31-ecf2-43ba-9d0c-44c4f36e4fd9">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="american_flights_json"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
