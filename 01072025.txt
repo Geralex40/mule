@@ -1,0 +1,15 @@
+por cada nuevo flujo, lo ideal es tenerlo en diferentes archivos, por que luego crecen demasiado  asi para tenerlos separados 
+
+El listener es el que activa el flujo, solo escucha, pero el request no, 
+
+Un endopoint es un punto de acceso, hacia donde llegamos. Y otro flujo con quick insert
+
+crear una base de datos con una tabla. Poner un select en mulesoft par que se conecte a esa DB
+esa DB de versión 19 para arriba
+
+hardcodear= no hacer todo a manita 
+por lo que no se hace con la parte grafica, si no codificando en el XML
+
+listener 
+
+Oracle express rápido, el entreprise tarda en instalarse
