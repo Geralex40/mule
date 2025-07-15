@@ -1,4 +1,5 @@
 import uvicorn
+import os
 
 host="localhost"
 port = int(os.environ.get("PORT", 8000))
