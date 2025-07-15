@@ -1,4 +1,6 @@
 import uvicorn
 
+host="localhost"
+
 if __name__ == "__main__":
-    uvicorn.run("webhook:app", host="0.0.0.0", port=8081, reload=True)
+    uvicorn.run("webhook:app", host=host, port=8081, reload=True)

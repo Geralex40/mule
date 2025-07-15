@@ -2,11 +2,12 @@ from fastapi import FastAPI, Body
 from pydantic import BaseModel
 from datetime import datetime
 import time
+from main import host
 
 import requests
 
 app = FastAPI()
-
+print(host)
 
 class endpoints(BaseModel):
     endPoint: str
@@ -29,21 +30,22 @@ posts = [
 async def get_posts() -> dict:
     return { "data": posts }
 
-#Ruta para darle a mi webhook el endpoint
+#Ruta para darle a mi webhook el endpoint a usar, detonando el webhook que manda posts
 @app.post("/endpointPost", tags=["webhook config"])
 async def add_post(posteo: endpoints) -> dict:
-    response = requests.post("http://localhost:8081/webhooks", json=posteo.dict(),timeout=2)
+    response = requests.post("http://"+host+":8081/webhooksPost", json=posteo.dict(),timeout=2)
     return {"status": "Triggered webhook", "response_code": response.status_code}
-
+#detonar el webhook que manda gets
 @app.post("/endpointGet", tags=["webhook config"])
 async def add_post(posteo: endpoints) -> dict:
     print("hola")
     print(posteo.dict())
-    requests.post("http://localhost:8081/webhooksGet", json=posteo.dict(),timeout=1)
+    webhookEndpoint="http://"+host+":8081/webhooksGet"
+    requests.post(webhookEndpoint, json=posteo.dict(),timeout=1)
     return {"status": "Triggered webhook"}
 
 i=0
-
+#webhook que manda posts
 @app.post("/webhooksPost",tags=["WebHooks"])
 def new_subscription(body: endpoints = Body(...),tags=["posts"]):
     global i
@@ -52,25 +54,26 @@ def new_subscription(body: endpoints = Body(...),tags=["posts"]):
         print(payload2)
         response = requests.post(body.endPoint, json={"received": payload2})
         print("enviado")
-        time.sleep(body.delay)  # Pause for 5 seconds
+        time.sleep(body.delay)#delay
     return {"status": "Triggered second endpoint", "response_code": response.status_code}
-
+#webhook que manda gets
 @app.post("/webhooksGet",tags=["WebHooks"])
 def new_subscription(body: endpoints = Body(...),tags=["posts"]):
     print(body)
     global i
-    while i<1:  # Loop will run 5 times
+    while i<1:
         requests.get(body.endPoint)
         print("enviado")
         time.sleep(body.delay) 
     return {"status": "Webhook ended"}
 
+#detener el webhook
 @app.get("/stop",tags=["webHookControl"])
 def detenerWebhook():
     global i
     i=i+1
     return{"webhook stopped"}
-
+#poner disponible el webhook despues de pausarlo
 @app.get("/reactivate",tags=["webHookControl"])
 def detenerWebhook():
     global i
