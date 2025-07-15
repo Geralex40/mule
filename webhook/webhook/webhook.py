@@ -2,12 +2,12 @@ from fastapi import FastAPI, Body
 from pydantic import BaseModel
 from datetime import datetime
 import time
-from main import host,port
+from main import hostin,port
 
 import requests
 
 app = FastAPI()
-print(host)
+print(hostin)
 
 class endpoints(BaseModel):
     endPoint: str
@@ -33,14 +33,14 @@ async def get_posts() -> dict:
 #Ruta para darle a mi webhook el endpoint a usar, detonando el webhook que manda posts
 @app.post("/endpointPost", tags=["webhook config"])
 async def add_post(posteo: endpoints) -> dict:
-    response = requests.post("http://"+host+":"+port+"/webhooksPost", json=posteo.dict(),timeout=2)
+    response = requests.post("http://"+hostin+":"+port+"/webhooksPost", json=posteo.dict(),timeout=2)
     return {"status": "Triggered webhook", "response_code": response.status_code}
 #detonar el webhook que manda gets
 @app.post("/endpointGet", tags=["webhook config"])
 async def add_post(posteo: endpoints) -> dict:
     print("hola")
     print(posteo.dict())
-    webhookEndpoint="http://"+host+":"+port+"/webhooksGet"
+    webhookEndpoint="http://"+hostin+":"+port+"/webhooksGet"
     requests.post(webhookEndpoint, json=posteo.dict(),timeout=1)
     return {"status": "Triggered webhook"}
 
