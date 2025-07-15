@@ -7,7 +7,7 @@ from main import hostin,port
 import requests
 
 app = FastAPI()
-print(hostin)
+print(hostin,port)
 
 class endpoints(BaseModel):
     endPoint: str
