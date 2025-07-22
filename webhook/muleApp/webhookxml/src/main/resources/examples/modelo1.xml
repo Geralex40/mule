@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+    <shampoo>
+	    <EMPLOYEE_ID>
+	        1
+	    </EMPLOYEE_ID>
+	    <FIRST_NAME>
+	        "alex"
+	    </FIRST_NAME>
+    </shampoo>

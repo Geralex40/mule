@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="idXml" format="xml">
+      <types:example format="xml" element="shampoo" location="examples/modelo.xml"/>
+    </types:type>
+    <types:type name="employees" format="xml">
+      <types:example format="xml" element="shampoo" location="examples/modelo1-2.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#5b6f6dbd-b8eb-412c-b0e7-c857d8b0b207">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="employees"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

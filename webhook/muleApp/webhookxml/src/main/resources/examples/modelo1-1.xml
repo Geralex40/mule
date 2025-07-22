@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+    <shampoo>
+	    <EMPLOYEE_ID>
+	        1
+	    </EMPLOYEE_ID>
+	    <FIRST_NAME>
+	        "alex"
+	    </FIRST_NAME>
+	    <LAST_NAME>
+	    	"THE LION"
+	    </LAST_NAME>
+	    <EMAIL>
+	    	"KKAAL"	
+	    </EMAIL>
+	    <HIRE_DATE>
+	    	"2025-07-21 15:30:00"
+	    </HIRE_DATE>
+	    <JOB_ID>
+	    	"IT_PROG"
+	    </JOB_ID>
+    </shampoo>

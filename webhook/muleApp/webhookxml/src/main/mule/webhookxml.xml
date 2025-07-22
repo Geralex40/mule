@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4d5c3e55-f8ad-40d0-83ed-8ef3da1525ef" >
+		<http:listener-connection host="0.0.0.0" port="888" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="c75cfd56-07c9-46ba-86af-533c52126878" >
+		<db:oracle-connection host="localhost" user="system" password="1234" instance="XE" />
+	</db:config>
+	<flow name="webhookxmlFlow" doc:id="55358c69-2c10-4aec-857d-f3e020f7c9cc" >
+		<http:listener doc:name="Listener" doc:id="3ae3d2fd-cd53-40aa-8e74-8c1cc8faca82" config-ref="HTTP_Listener_config" path="/hellomule"/>
+		<logger level="INFO" doc:name="Logger1" doc:id="df0e7b5b-5e54-4493-a74c-bf96c9e4a0f5" message="#[payload]" />
+		<ee:transform doc:name="Transform Message" doc:id="5b6f6dbd-b8eb-412c-b0e7-c857d8b0b207" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[
+				%dw 2.0
+output application/xml
+var parsed = read(payload, "application/xml")
+---
+{
+	shampoo: {
+		employee_id: trim(parsed.shampoo.id as String) as Number,
+		first_name: trim(parsed.shampoo.Name as String),
+		last_name: "OHHmagaaa",
+		email: trim(parsed.shampoo.Email as String),
+		hire_date: "2025-07-21 15:30:00",
+		job_id: "IT_PROG"
+	}
+}
+			]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="6a85b9bd-2e9e-4d6c-a8ec-99bcd5d8245b" message="#[payload]"/>
+		<db:insert doc:name="Insert" doc:id="47e5f864-b49b-4d03-9280-04d1a31ecac7" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO HR.EMPLOYEES(EMPLOYEE_ID,FIRST_NAME,LAST_NAME,EMAIL,HIRE_DATE,JOB_ID)
+				VALUES (:employee_id, :first_name, :last_name, :email, TO_DATE(:hire_date, 'YYYY-MM-DD HH24:MI:SS'), :job_id)]]></db:sql>
+							<db:input-parameters ><![CDATA[#[{
+				        employee_id: payload.shampoo.employee_id,
+				        first_name: payload.shampoo.first_name,
+				        last_name: payload.shampoo.last_name,
+				        email: payload.shampoo.email,
+				        hire_date:payload.shampoo.hire_date,
+				        job_id:payload.shampoo.job_id
+							}]]]></db:input-parameters>
+		</db:insert>
+	</flow>
+</mule>
