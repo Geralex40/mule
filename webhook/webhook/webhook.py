@@ -41,16 +41,19 @@ idInicial=1
 nombreInicial="a"
 def defineXml(idInicial2,nombre):
     idInicial=idInicial2
+    email="asdfg"+str(idInicial)    
     global data 
     data = """
-    <?xml version="1.0"?>
     <shampoo>
-    <id>
-        """+str(idInicial)+"""
-    </id>
-    <Name>
-        """+nombre+"""
-    </Name>
+        <id>
+            """+str(idInicial)+"""
+        </id>
+        <Name>
+            """+nombre+"""
+        </Name>
+        <Email>
+            """+email+"""
+        </Email>
     </shampoo>
     """
     return data
