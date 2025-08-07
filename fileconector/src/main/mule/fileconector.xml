@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7e784cef-0871-49bc-ad9e-146ed1c2d180" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="fileconectorFlow" doc:id="91c9c12f-8ad2-4f33-b86a-205a0b54e649" >
+		<http:listener doc:name="Listener" doc:id="f75b0f7c-134d-45f1-a6e3-47007b701f5b" config-ref="HTTP_Listener_config" path="/direccion" allowedMethods="POST">
+			<http:error-response >
+				<http:body ><![CDATA[#[output application/xml
+---
+{
+	error: {
+		code: 404,
+		description:"No se encontraron archivos en la ruta especificada"
+	}
+}]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="877fe287-400d-4779-8c01-686355e1517f" message="#[attributes.queryParams.path]" />
+		<file:list doc:name="List" doc:id="01538e26-47c9-44c2-89ab-60f46088d504" directoryPath="#[attributes.queryParams.path]">
+			<error-mapping sourceType="FILE:ILLEGAL_PATH" targetType="APP:NOVALIDO" />
+		</file:list>
+		<choice doc:name="Choice" doc:id="48c888cb-c799-41c7-b819-ba7accaf600f" >
+			<when expression='#[sizeOf(payload) != 0]'>
+				<logger level="INFO" doc:name="Logger" doc:id="818bab63-c5f7-44de-87cb-0081fcb55845" message="#[sizeOf(payload)]" />
+				<ee:transform doc:name="Transform Message" doc:id="a6d5c18b-cabf-4345-84b1-f05c44537ab2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	FILES: {
+		name: payload.attributes.fileName
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="d3102a54-e4d7-4d5e-bb9c-9baa25c22ce9" message="ErrorDefault" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

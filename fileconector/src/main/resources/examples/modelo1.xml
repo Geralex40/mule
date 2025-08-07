@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+    <FILES>
+	    <employee_id>
+	        1
+	    </employee_id>
+	    <name>
+	        "alex"
+	    </name>
+	    <hire_date>
+	    	"2025-07-21 15:30:00"
+	    </hire_date>
+    </FILES>

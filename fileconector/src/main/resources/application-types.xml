@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="xeml" format="xml">
+      <types:example format="xml" element="FILES" location="examples/modelo1.xml"/>
+    </types:type>
+    <types:type name="eerror" format="xml">
+      <types:example format="xml" element="error" location="examples/modeloError404.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#a6d5c18b-cabf-4345-84b1-f05c44537ab2">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="xeml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f636d7e8-b4ff-4c6c-b9a0-5e95b45486e4">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="eerror"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f75b0f7c-134d-45f1-a6e3-47007b701f5b">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="body" type="eerror"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+</types:mule>
